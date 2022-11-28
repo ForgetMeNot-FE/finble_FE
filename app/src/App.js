@@ -13,7 +13,11 @@ import { Line } from 'react-chartjs-2';
 import KOSPI from './assets/KOSPI.json';
 
 export default function App() {
-  return <Line options={options} data={data} />;
+  return (
+    <>
+      <Line options={options} data={data} />
+    </>
+  );
 }
 
 const options = {
