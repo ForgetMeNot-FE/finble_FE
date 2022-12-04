@@ -11,77 +11,85 @@ import {
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import KOSPI from '../assets/KOSPI.json';
-
-let labels = [];
-
-const data = {
-  labels: labels,
-  datasets: [
-    {
-      label: '코스피 지수',
-      data: KOSPI.map((item) => item.data),
-      borderColor: 'rgb(255, 99, 132)',
-      backgroundColor: 'rgba(255, 99, 132, 0.5)',
-    },
-    {
-      label: '내 포트폴리오',
-      data: KOSPI.map((item) => item.data + 50),
-      borderColor: 'rgb(53, 162, 235)',
-      backgroundColor: 'rgba(53, 162, 235, 0.5)',
-    },
-  ],
-};
+import styled from 'styled-components';
 
 const Graph = () => {
   const [flag, setFlag] = useState(false);
+  const [labels, setLabel] = useState([]);
 
   useEffect(() => {
-    labels = [];
+    setLabel([]);
     let lastYear = 0;
 
     KOSPI.map((item) => {
       const year = parseInt(item.date / 10000).toString();
+      let newLabel = labels;
+
       if (year != lastYear) {
-        labels.push(parseInt(item.date / 10000)).toString();
+        newLabel.push(parseInt(item.date / 10000)).toString();
         lastYear = year;
       } else {
-        labels.push('\t');
+        newLabel.push('\t');
       }
+      setLabel(newLabel);
     });
 
     console.log(labels);
-
     setFlag(true);
   }, []);
 
+  const data = {
+    labels: labels,
+    datasets: [
+      {
+        label: '코스피 지수',
+        data: KOSPI.map((item) => item.data),
+        borderColor: 'rgb(255, 99, 132)',
+        backgroundColor: 'rgba(255, 99, 132, 0.5)',
+      },
+      {
+        label: '내 포트폴리오',
+        data: KOSPI.map((item) => item.data + 50),
+        borderColor: 'rgb(53, 162, 235)',
+        backgroundColor: 'rgba(53, 162, 235, 0.5)',
+      },
+    ],
+  };
+
+  ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend
+  );
+
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top',
+      },
+      title: {
+        display: true,
+        text: '테스트 개발 v1',
+      },
+    },
+  };
+
   return (
     <>
-      {/* {flag ? <Line options={options} data={data} /> : <></>} */}
-      <Line options={options} data={data} />
+      <Container>
+        {/* <Line options={options} data={data} /> */}
+        {flag ? <Line options={options} data={data} /> : <></>}
+      </Container>
     </>
   );
 };
 export default Graph;
 
-const options = {
-  responsive: true,
-  plugins: {
-    legend: {
-      position: 'top',
-    },
-    title: {
-      display: true,
-      text: '테스트 개발 v1',
-    },
-  },
-};
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-);
+const Container = styled.div`
+  overflow-x: scroll;
+`;
